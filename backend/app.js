@@ -7,14 +7,13 @@ const applicationRouter = require('./routes/applicationRouter')
 
 const app = express()
 
-const allowedOrigins = [
-    process.env.CLIENT_ORIGIN,
-    'http://localhost:5173'
-].filter(Boolean)
-
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin) return callback(null, true)
+        const isLocalhost = origin.startsWith('http://localhost')
+        const isVercel = /^https:\/\/application-tracker[a-z0-9-]*\.vercel\.app$/.test(origin)
+        const isCustomOrigin = process.env.CLIENT_ORIGIN && origin === process.env.CLIENT_ORIGIN
+        if (isLocalhost || isVercel || isCustomOrigin) {
             callback(null, true)
         } else {
             callback(new Error('Not allowed by CORS'))
