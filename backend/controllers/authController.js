@@ -2,10 +2,12 @@ const prisma = require('../prisma/client')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 
+const isProd = process.env.NODE_ENV === 'production'
+
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict',
+    secure: isProd,
+    sameSite: isProd ? 'None' : 'Lax',
     maxAge: 30 * 24 * 60 * 60 * 1000,
 }
 

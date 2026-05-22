@@ -7,7 +7,21 @@ const applicationRouter = require('./routes/applicationRouter')
 
 const app = express()
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173', credentials: true }))
+const allowedOrigins = [
+    process.env.CLIENT_ORIGIN,
+    'http://localhost:5173'
+].filter(Boolean)
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    },
+    credentials: true
+}))
 app.use(express.json())
 app.use(cookieParser())
 app.use('/api/auth', authRouter)
