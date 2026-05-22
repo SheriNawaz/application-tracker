@@ -35,6 +35,8 @@ const formatDate = (date: string | null) => {
 const Tracker = () => {
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [loadError, setLoadError] = useState('');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusValue | 'All'>('All');
   const [formData, setFormData] = useState({
     company_name: "",
     job_role: "",
@@ -81,6 +83,16 @@ const Tracker = () => {
     }
   };
 
+  const filteredApplications = applications.filter(app => {
+    const matchesStatus = statusFilter === 'All' || app.status === statusFilter;
+    const q = search.toLowerCase();
+    const matchesSearch = !q
+      || app.company_name.toLowerCase().includes(q)
+      || app.job_role.toLowerCase().includes(q)
+      || (app.location ?? '').toLowerCase().includes(q);
+    return matchesStatus && matchesSearch;
+  });
+
   const deleteApplication = async (id: number) => {
     try {
       await api.delete(`/application/${id}`);
@@ -96,6 +108,31 @@ const Tracker = () => {
         <div className="mb-10">
           <h1 className="text-5xl font-black tracking-tight">Job Tracker</h1>
           <p className="text-slate-400 mt-2 text-lg">Track your applications in one place</p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <input
+            type="text"
+            placeholder="Search by company, role or location…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-500 outline-none focus:border-slate-600 transition-colors"
+          />
+          <div className="flex gap-2 flex-wrap">
+            {(['All', ...STATUS_OPTIONS] as const).map(s => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(s)}
+                className={`cursor-pointer px-4 py-2.5 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                  statusFilter === s
+                    ? 'bg-white text-slate-950'
+                    : 'border border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 mb-10">
@@ -147,9 +184,11 @@ const Tracker = () => {
 
         {applications.length === 0 && !loadError ? (
           <p className="text-slate-500 text-center py-16">No applications yet. Add one above!</p>
+        ) : filteredApplications.length === 0 ? (
+          <p className="text-slate-500 text-center py-16">No applications match your filters.</p>
         ) : (
           <div className="grid gap-5">
-            {applications.map((application) => (
+            {filteredApplications.map((application) => (
               <div
                 key={application.id}
                 className="bg-slate-900 border border-slate-800 rounded-3xl p-6 hover:border-slate-700 transition-colors"
