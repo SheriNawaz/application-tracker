@@ -1,7 +1,30 @@
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 const SignUp = () => {
   const navigate = useNavigate()
+  const { register } = useAuth()
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+    try {
+      await register(email, username, password)
+      navigate('/tracker')
+    } catch (err: unknown) {
+      const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      setError(message || 'Registration failed')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
@@ -11,14 +34,23 @@ const SignUp = () => {
           <p className="text-slate-400 text-sm font-light">Start tracking your applications</p>
         </div>
 
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <p className="text-red-400 text-sm text-center bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+              {error}
+            </p>
+          )}
+
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
-              Name
+              Username
             </label>
             <input
               type="text"
-              placeholder="Jane Smith"
+              placeholder="janesmit"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              required
               className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors duration-200"
             />
           </div>
@@ -30,6 +62,9 @@ const SignUp = () => {
             <input
               type="email"
               placeholder="you@example.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
               className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors duration-200"
             />
           </div>
@@ -41,14 +76,21 @@ const SignUp = () => {
             <input
               type="password"
               placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
               className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors duration-200"
             />
           </div>
 
-          <button className="w-full py-3 bg-white text-slate-950 text-sm font-semibold rounded-full hover:bg-slate-100 transition-colors duration-200 mt-2">
-            Create account
+          <button
+            type="submit"
+            disabled={loading}
+            className="cursor-pointer w-full py-3 bg-white text-slate-950 text-sm font-semibold rounded-full hover:bg-slate-100 transition-colors duration-200 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Creating account...' : 'Create account'}
           </button>
-        </div>
+        </form>
 
         <p className="text-center text-slate-500 text-sm">
           Already have an account?{" "}
