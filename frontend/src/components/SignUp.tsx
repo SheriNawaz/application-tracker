@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import PasswordInput from "./PasswordInput"
 
 const SignUp = () => {
   const navigate = useNavigate()
@@ -73,14 +74,7 @@ const SignUp = () => {
             <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
               Password
             </label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors duration-200"
-            />
+            <PasswordInput value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
 
           <button

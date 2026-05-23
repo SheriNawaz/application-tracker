@@ -105,25 +105,25 @@ const Tracker = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 pt-22 pb-10">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-10">
-          <h1 className="text-5xl font-black tracking-tight">Job Tracker</h1>
-          <p className="text-slate-400 mt-2 text-lg">Track your applications in one place</p>
+        <div className="mb-8">
+          <h1 className="text-3xl sm:text-5xl font-black tracking-tight">Job Tracker</h1>
+          <p className="text-slate-400 mt-2 text-base sm:text-lg">Track your applications in one place</p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="flex flex-col gap-3 mb-6">
           <input
             type="text"
             placeholder="Search by company, role or location…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-500 outline-none focus:border-slate-600 transition-colors"
+            className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white text-sm placeholder-slate-500 outline-none focus:border-slate-600 transition-colors"
           />
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             {(['All', ...STATUS_OPTIONS] as const).map(s => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
-                className={`cursor-pointer px-4 py-2.5 rounded-full text-sm font-semibold transition-colors duration-200 ${
+                className={`cursor-pointer flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-200 ${
                   statusFilter === s
                     ? 'bg-white text-slate-950'
                     : 'border border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'
@@ -208,7 +208,7 @@ const Tracker = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex flex-wrap items-center gap-2 pt-1 lg:pt-0">
                     <select
                       value={application.status ?? ''}
                       onChange={e => updateStatus(application.id, e.target.value)}
@@ -222,7 +222,7 @@ const Tracker = () => {
                         href={application.company_website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="cursor-pointer inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-slate-700 hover:border-slate-500 hover:bg-slate-800 transition-colors duration-200 text-sm font-semibold"
+                        className="cursor-pointer inline-flex items-center justify-center px-4 py-2 rounded-full border border-slate-700 hover:border-slate-500 hover:bg-slate-800 transition-colors duration-200 text-sm font-semibold"
                       >
                         Visit Company
                       </a>
@@ -230,7 +230,7 @@ const Tracker = () => {
 
                     <button
                       onClick={() => deleteApplication(application.id)}
-                      className="cursor-pointer px-4 py-2.5 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/60 transition-colors duration-200 text-sm font-semibold"
+                      className="cursor-pointer px-4 py-2 rounded-full border border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/60 transition-colors duration-200 text-sm font-semibold"
                     >
                       Delete
                     </button>

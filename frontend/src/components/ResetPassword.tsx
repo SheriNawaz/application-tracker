@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import api from "../api/axios"
+import PasswordInput from "./PasswordInput"
 
 const ResetPassword = () => {
   const navigate = useNavigate()
@@ -84,27 +85,13 @@ const ResetPassword = () => {
               <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
                 New Password
               </label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors duration-200"
-              />
+              <PasswordInput value={password} onChange={e => setPassword(e.target.value)} required />
             </div>
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
                 Confirm Password
               </label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={confirm}
-                onChange={e => setConfirm(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-slate-900 border border-slate-800 rounded-xl text-white text-sm placeholder-slate-600 focus:outline-none focus:border-slate-600 transition-colors duration-200"
-              />
+              <PasswordInput value={confirm} onChange={e => setConfirm(e.target.value)} required />
             </div>
             <button
               type="submit"
