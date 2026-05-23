@@ -5,16 +5,11 @@ const crypto = require('crypto')
 const nodemailer = require('nodemailer')
 
 const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: false,
+    service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
-    connectionTimeout: 5000,
-    greetingTimeout: 5000,
-    socketTimeout: 5000,
 })
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -126,19 +121,24 @@ const forgotPassword = async (req, res) => {
             return res.json({ message: 'If that email exists, a reset link has been sent.' })
         }
 
-        await transporter.sendMail({
-            from: `"Application Tracker" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Reset your password',
-            html: `
-                <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f172a;color:#fff;border-radius:16px;">
-                    <h2 style="margin-bottom:8px;">Reset your password</h2>
-                    <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to reset your password. This link expires in 1 hour.</p>
-                    <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#fff;color:#0f172a;font-weight:700;border-radius:999px;text-decoration:none;">Reset Password</a>
-                    <p style="color:#475569;margin-top:24px;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
-                </div>
-            `
-        })
+        try {
+            await transporter.sendMail({
+                from: `"Application Tracker" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: 'Reset your password',
+                html: `
+                    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f172a;color:#fff;border-radius:16px;">
+                        <h2 style="margin-bottom:8px;">Reset your password</h2>
+                        <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to reset your password. This link expires in 1 hour.</p>
+                        <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#fff;color:#0f172a;font-weight:700;border-radius:999px;text-decoration:none;">Reset Password</a>
+                        <p style="color:#475569;margin-top:24px;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
+                    </div>
+                `
+            })
+        } catch (emailError) {
+            console.error('Email send failed:', emailError.message)
+            return res.status(500).json({ error: `Email failed: ${emailError.message}` })
+        }
 
         res.json({ message: 'If that email exists, a reset link has been sent.' })
     } catch (error) {

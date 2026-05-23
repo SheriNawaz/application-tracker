@@ -16,8 +16,9 @@ const ForgotPassword = () => {
     try {
       await api.post("/auth/forgot-password", { email })
       setSent(true)
-    } catch {
-      setError("Something went wrong. Please try again.")
+    } catch (err: unknown) {
+      const message = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+      setError(message || "Something went wrong. Please try again.")
     } finally {
       setLoading(false)
     }
