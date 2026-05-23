@@ -2,15 +2,8 @@ const prisma = require('../prisma/client')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
-const nodemailer = require('nodemailer')
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-})
+const { Resend } = require('resend')
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -116,26 +109,26 @@ const forgotPassword = async (req, res) => {
 
         const resetUrl = `${process.env.CLIENT_ORIGIN}/reset-password?token=${token}`
 
-        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-            console.error('Email not configured: EMAIL_USER or EMAIL_PASS missing')
-            return res.json({ message: 'If that email exists, a reset link has been sent.' })
+        if (!process.env.RESEND_API_KEY) {
+            console.error('RESEND_API_KEY not configured')
+            return res.status(500).json({ error: 'Email service not configured' })
         }
 
-        try {
-            await transporter.sendMail({
-                from: `"Application Tracker" <${process.env.EMAIL_USER}>`,
-                to: email,
-                subject: 'Reset your password',
-                html: `
-                    <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f172a;color:#fff;border-radius:16px;">
-                        <h2 style="margin-bottom:8px;">Reset your password</h2>
-                        <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to reset your password. This link expires in 1 hour.</p>
-                        <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#fff;color:#0f172a;font-weight:700;border-radius:999px;text-decoration:none;">Reset Password</a>
-                        <p style="color:#475569;margin-top:24px;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
-                    </div>
-                `
-            })
-        } catch (emailError) {
+        const { error: emailError } = await resend.emails.send({
+            from: 'Application Tracker <onboarding@resend.dev>',
+            to: email,
+            subject: 'Reset your password',
+            html: `
+                <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f172a;color:#fff;border-radius:16px;">
+                    <h2 style="margin-bottom:8px;">Reset your password</h2>
+                    <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to reset your password. This link expires in 1 hour.</p>
+                    <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#fff;color:#0f172a;font-weight:700;border-radius:999px;text-decoration:none;">Reset Password</a>
+                    <p style="color:#475569;margin-top:24px;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
+                </div>
+            `
+        })
+
+        if (emailError) {
             console.error('Email send failed:', emailError.message)
             return res.status(500).json({ error: `Email failed: ${emailError.message}` })
         }
