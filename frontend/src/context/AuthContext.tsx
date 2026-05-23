@@ -18,24 +18,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) { setLoading(false); return }
     api.get('/auth/me')
       .then(res => setUser(res.data))
-      .catch(() => setUser(null))
+      .catch(() => {
+        localStorage.removeItem('token')
+        setUser(null)
+      })
       .finally(() => setLoading(false))
   }, [])
 
   const login = async (email: string, password: string) => {
     const res = await api.post('/auth/login', { email, password })
+    localStorage.setItem('token', res.data.token)
     setUser(res.data.user)
   }
 
   const register = async (email: string, username: string, password: string) => {
     const res = await api.post('/auth/register', { email, username, password })
+    localStorage.setItem('token', res.data.token)
     setUser(res.data.user)
   }
 
   const logout = async () => {
-    await api.post('/auth/logout')
+    localStorage.removeItem('token')
     setUser(null)
   }
 

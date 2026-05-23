@@ -34,8 +34,7 @@ const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials' })
 
         const token = generateToken(user.id)
-        res.cookie('token', token, cookieOptions)
-        res.json({ user: { id: user.id, email: user.email, username: user.username } })
+        res.json({ user: { id: user.id, email: user.email, username: user.username }, token })
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
@@ -55,8 +54,7 @@ const registerUser = async (req, res) => {
         })
 
         const token = generateToken(newUser.id)
-        res.cookie('token', token, cookieOptions)
-        return res.status(201).json({ user: newUser })
+        return res.status(201).json({ user: newUser, token })
     } catch (error) {
         if (error.code === 'P2002') {
             const field = error.meta?.target?.[0]
@@ -85,7 +83,6 @@ const getUserById = async (req, res) => {
 }
 
 const logoutUser = async (req, res) => {
-    res.cookie('token', '', { ...cookieOptions, maxAge: 1 })
     res.json({ message: 'Logged out successfully' })
 }
 
