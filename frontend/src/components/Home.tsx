@@ -53,7 +53,7 @@ const Home = () => {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
         <div className="text-center space-y-6">
-          <h1 className="text-8xl font-black text-white tracking-tight">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white tracking-tight">
             Application Tracker
           </h1>
           <h2 className="text-lg text-slate-400 font-light max-w-sm mx-auto leading-relaxed">
