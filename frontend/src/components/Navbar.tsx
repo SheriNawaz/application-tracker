@@ -19,14 +19,14 @@ const Navbar = () => {
         <div className="flex items-center gap-1">
           <Link
             to="/"
-            className="px-4 py-2 text-slate-400 text-sm font-medium hover:text-white transition-colors duration-200 rounded-full hover:bg-slate-800"
+            className="cursor-pointer px-4 py-2 text-slate-400 text-sm font-medium hover:text-white transition-colors duration-200 rounded-full hover:bg-slate-800"
           >
             Home
           </Link>
           {user && (
             <Link
               to="/tracker"
-              className="px-4 py-2 text-slate-400 text-sm font-medium hover:text-white transition-colors duration-200 rounded-full hover:bg-slate-800"
+              className="cursor-pointer px-4 py-2 text-slate-400 text-sm font-medium hover:text-white transition-colors duration-200 rounded-full hover:bg-slate-800"
             >
               Tracker
             </Link>
@@ -47,13 +47,13 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2 text-slate-400 text-sm font-medium hover:text-white transition-colors duration-200 rounded-full hover:bg-slate-800"
+                className="cursor-pointer px-4 py-2 text-slate-400 text-sm font-medium hover:text-white transition-colors duration-200 rounded-full hover:bg-slate-800"
               >
                 Login
               </Link>
               <Link
                 to="/register"
-                className="px-5 py-2 bg-white text-slate-950 text-sm font-semibold rounded-full hover:bg-slate-100 transition-colors duration-200 ml-2"
+                className="cursor-pointer px-5 py-2 bg-white text-slate-950 text-sm font-semibold rounded-full hover:bg-slate-100 transition-colors duration-200 ml-2"
               >
                 Sign Up
               </Link>

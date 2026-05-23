@@ -222,7 +222,7 @@ const Tracker = () => {
                         href={application.company_website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-slate-700 hover:border-slate-500 hover:bg-slate-800 transition-colors duration-200 text-sm font-semibold"
+                        className="cursor-pointer inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-slate-700 hover:border-slate-500 hover:bg-slate-800 transition-colors duration-200 text-sm font-semibold"
                       >
                         Visit Company
                       </a>

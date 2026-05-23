@@ -80,7 +80,7 @@ const ForgotPassword = () => {
         <p className="text-center text-slate-500 text-sm">
           <button
             onClick={() => navigate("/login")}
-            className="text-white font-semibold hover:text-slate-300 transition-colors duration-200"
+            className="cursor-pointer text-white font-semibold hover:text-slate-300 transition-colors duration-200"
           >
             Back to login
           </button>

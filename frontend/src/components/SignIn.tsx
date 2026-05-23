@@ -91,7 +91,7 @@ const SignIn = () => {
           Don't have an account?{" "}
           <button
             onClick={() => navigate("/register")}
-            className="text-white font-semibold hover:text-slate-300 transition-colors duration-200"
+            className="cursor-pointer text-white font-semibold hover:text-slate-300 transition-colors duration-200"
           >
             Sign up
           </button>

@@ -12,6 +12,9 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 5000,
 })
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -117,6 +120,11 @@ const forgotPassword = async (req, res) => {
         })
 
         const resetUrl = `${process.env.CLIENT_ORIGIN}/reset-password?token=${token}`
+
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.error('Email not configured: EMAIL_USER or EMAIL_PASS missing')
+            return res.json({ message: 'If that email exists, a reset link has been sent.' })
+        }
 
         await transporter.sendMail({
             from: `"Application Tracker" <${process.env.EMAIL_USER}>`,

@@ -96,7 +96,7 @@ const SignUp = () => {
           Already have an account?{" "}
           <button
             onClick={() => navigate("/login")}
-            className="text-white font-semibold hover:text-slate-300 transition-colors duration-200"
+            className="cursor-pointer text-white font-semibold hover:text-slate-300 transition-colors duration-200"
           >
             Sign in
           </button>
