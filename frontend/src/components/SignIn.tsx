@@ -75,6 +75,16 @@ const SignIn = () => {
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
+
+          <p className="text-center">
+            <button
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-slate-500 text-sm hover:text-slate-300 transition-colors duration-200"
+            >
+              Forgot your password?
+            </button>
+          </p>
         </form>
 
         <p className="text-center text-slate-500 text-sm">

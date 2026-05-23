@@ -6,6 +6,8 @@ import SignUp from './components/SignUp';
 import Tracker from './components/Tracker';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/login" element={<SignIn />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/tracker" element={
             <ProtectedRoute>
               <Tracker />

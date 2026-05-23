@@ -1,6 +1,18 @@
 const prisma = require('../prisma/client')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const crypto = require('crypto')
+const nodemailer = require('nodemailer')
+
+const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '587'),
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+})
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -86,4 +98,75 @@ const logoutUser = async (req, res) => {
     res.json({ message: 'Logged out successfully' })
 }
 
-module.exports = { loginUser, registerUser, getCurrentUser, getUserById, logoutUser }
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+        if (!email) return res.status(400).json({ message: 'Email is required' })
+
+        const user = await prisma.users.findUnique({ where: { email } })
+
+        // Always return success to avoid exposing whether an email exists
+        if (!user) return res.json({ message: 'If that email exists, a reset link has been sent.' })
+
+        const token = crypto.randomBytes(32).toString('hex')
+        const expiry = new Date(Date.now() + 1000 * 60 * 60) // 1 hour
+
+        await prisma.users.update({
+            where: { email },
+            data: { reset_token: token, reset_token_expiry: expiry }
+        })
+
+        const resetUrl = `${process.env.CLIENT_ORIGIN}/reset-password?token=${token}`
+
+        await transporter.sendMail({
+            from: `"Application Tracker" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Reset your password',
+            html: `
+                <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f172a;color:#fff;border-radius:16px;">
+                    <h2 style="margin-bottom:8px;">Reset your password</h2>
+                    <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to reset your password. This link expires in 1 hour.</p>
+                    <a href="${resetUrl}" style="display:inline-block;padding:12px 28px;background:#fff;color:#0f172a;font-weight:700;border-radius:999px;text-decoration:none;">Reset Password</a>
+                    <p style="color:#475569;margin-top:24px;font-size:13px;">If you didn't request this, you can safely ignore this email.</p>
+                </div>
+            `
+        })
+
+        res.json({ message: 'If that email exists, a reset link has been sent.' })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body
+        if (!token || !password) return res.status(400).json({ message: 'Token and password are required' })
+
+        const user = await prisma.users.findFirst({
+            where: {
+                reset_token: token,
+                reset_token_expiry: { gt: new Date() }
+            }
+        })
+
+        if (!user) return res.status(400).json({ message: 'Reset link is invalid or has expired' })
+
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        await prisma.users.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                reset_token: null,
+                reset_token_expiry: null
+            }
+        })
+
+        res.json({ message: 'Password reset successfully' })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
+
+module.exports = { loginUser, registerUser, getCurrentUser, getUserById, logoutUser, forgotPassword, resetPassword }
